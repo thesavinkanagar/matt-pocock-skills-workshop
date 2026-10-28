@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import ProductCard from '../components/ProductCard';
 import { useAuth } from '../context/AuthContext';
@@ -46,11 +46,20 @@ export default function FavouritesPage() {
 
       {error && <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {favourites.map((item) => (
-          <ProductCard key={item.id} item={item} onRemove={handleRemove} />
-        ))}
-      </div>
+      {favourites.length === 0 ? (
+        <div className="card text-center">
+          <p className="text-slate-500">You have no Favourites yet. Tap a heart in the catalog to save one.</p>
+          <Link to="/" className="btn-primary mt-4 inline-flex">
+            Browse the catalog
+          </Link>
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {favourites.map((item) => (
+            <ProductCard key={item.id} item={item} onRemove={handleRemove} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

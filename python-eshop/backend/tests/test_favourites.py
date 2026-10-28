@@ -1,3 +1,6 @@
+import sqlite3
+
+from config import settings
 from tests.conftest import login
 
 
@@ -129,3 +132,36 @@ def test_anonymous_heart_click_saves_nothing_after_signing_in(client, anon_heade
     headers = login(client, headers=anon_headers)
 
     assert favourite_ids(client, headers) == []
+
+
+def test_favourites_show_the_current_price(client, demo_headers):
+    save(client, demo_headers, 3)
+    with sqlite3.connect(settings.database_path) as conn:
+        conn.execute("UPDATE catalog_items SET price = 42.5 WHERE id = 3")
+
+    favourites = client.get("/api/favourites", headers=demo_headers).json()
+
+    assert favourites[0]["price"] == 42.5
+
+
+def test_buying_a_favourite_keeps_it_a_favourite(client, demo_headers):
+    save(client, demo_headers, 3)
+
+    basket = client.post(
+        "/api/basket/items", json={"catalog_item_id": 3}, headers=demo_headers
+    ).json()
+    order = client.post(
+        "/api/orders", json={"basket_id": basket["id"]}, headers=demo_headers
+    )
+    assert order.status_code == 200, order.text
+
+    assert favourite_ids(client, demo_headers) == [3]
+
+
+def test_favourite_whose_product_no_longer_exists_is_left_out(client, demo_headers):
+    for product_id in [2, 3]:
+        save(client, demo_headers, product_id)
+    with sqlite3.connect(settings.database_path) as conn:
+        conn.execute("DELETE FROM catalog_items WHERE id = 2")
+
+    assert favourite_ids(client, demo_headers) == [3]

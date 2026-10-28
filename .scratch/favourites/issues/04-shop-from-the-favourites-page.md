@@ -6,9 +6,13 @@
 
 **Status:** ready-for-agent
 
-- [ ] Each card on the Favourites page has an "Add to basket" button with the same behaviour as the catalog card
-- [ ] `GET /api/favourites` shows the Product's current price
-- [ ] Adding a Favourite to the basket and placing an order leaves it in `GET /api/favourites`
-- [ ] A Favourite whose Product no longer exists is omitted from `GET /api/favourites` without an error
-- [ ] With no Favourites, the page shows a short message and a link to the catalog
-- [ ] Backend tests through the HTTP API with the `client` fixture cover the above; frontend checked by hand in the browser
+- [x] Each card on the Favourites page has an "Add to basket" button with the same behaviour as the catalog card
+- [x] `GET /api/favourites` shows the Product's current price
+- [x] Adding a Favourite to the basket and placing an order leaves it in `GET /api/favourites`
+- [x] A Favourite whose Product no longer exists is omitted from `GET /api/favourites` without an error
+- [x] With no Favourites, the page shows a short message and a link to the catalog
+- [x] Backend tests through the HTTP API with the `client` fixture cover the above; frontend checked by hand in the browser
+
+## Comments
+
+- Implemented: empty state on the Favourites page with a link to the catalog. Add to basket, current price and skipping missing Products already worked via the shared product card and the live join; new tests in `python-eshop/backend/tests/test_favourites.py` guard the price, checkout and missing-Product cases. Frontend checked by hand in the browser.
