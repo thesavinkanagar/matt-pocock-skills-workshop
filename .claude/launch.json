@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "--directory", "python-eshop/backend", "python", "run.py"],
+      "port": 8765
+    },
+    {
+      "name": "frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "python-eshop/frontend", "run", "dev"],
+      "port": 4321
+    }
+  ]
+}
