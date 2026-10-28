@@ -6,8 +6,12 @@
 
 **Status:** ready-for-agent
 
-- [ ] Anonymous catalog cards show an empty heart
-- [ ] Clicking it navigates to sign in with the current catalog URL as the return-to
-- [ ] After signing in, the shopper lands back on that catalog page and no Favourite has been saved
-- [ ] While anonymous, the catalog makes no calls to the favourites API
-- [ ] Backend test confirms anonymous and basket-id-only requests can't create Favourites (401); the redirect flow is checked by hand in the browser
+- [x] Anonymous catalog cards show an empty heart
+- [x] Clicking it navigates to sign in with the current catalog URL as the return-to
+- [x] After signing in, the shopper lands back on that catalog page and no Favourite has been saved
+- [x] While anonymous, the catalog makes no calls to the favourites API
+- [x] Backend test confirms anonymous and basket-id-only requests can't create Favourites (401); the redirect flow is checked by hand in the browser
+
+## Comments
+
+- Implemented: anonymous catalog cards show an empty heart; clicking it goes to sign in with the current catalog URL (path and query) as the return-to, and the catalog makes no favourites calls while anonymous. Backend test `test_anonymous_heart_click_saves_nothing_after_signing_in` guards that nothing is saved; redirect flow checked by hand in the browser.

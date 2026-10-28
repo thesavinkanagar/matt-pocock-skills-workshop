@@ -120,3 +120,12 @@ def test_removing_never_touches_another_shoppers_favourites(client, demo_headers
 
     assert favourite_ids(client, demo_headers) == [3]
     assert favourite_ids(client, other) == []
+
+
+def test_anonymous_heart_click_saves_nothing_after_signing_in(client, anon_headers):
+    attempt = client.put("/api/favourites/3", headers=anon_headers)
+    assert attempt.status_code == 401
+
+    headers = login(client, headers=anon_headers)
+
+    assert favourite_ids(client, headers) == []

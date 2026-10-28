@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import CatalogFilters from '../components/CatalogFilters';
 import Pagination from '../components/Pagination';
@@ -15,6 +15,8 @@ export default function CatalogPage() {
   const [error, setError] = useState('');
 
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [favouriteIds, setFavouriteIds] = useState(new Set());
 
   const brandId = searchParams.get('brand') || '';
@@ -42,6 +44,11 @@ export default function CatalogPage() {
   }, [isAuthenticated]);
 
   async function handleFavourite(productId) {
+    if (!isAuthenticated) {
+      // No anonymous Favourites: sign in first, then come back to this page.
+      navigate('/login', { state: { from: location.pathname + location.search } });
+      return;
+    }
     const saved = favouriteIds.has(productId);
     try {
       if (saved) {
@@ -119,7 +126,7 @@ export default function CatalogPage() {
                 key={item.id}
                 item={item}
                 isFavourite={favouriteIds.has(item.id)}
-                onFavourite={isAuthenticated ? handleFavourite : undefined}
+                onFavourite={handleFavourite}
               />
             ))}
           </div>
