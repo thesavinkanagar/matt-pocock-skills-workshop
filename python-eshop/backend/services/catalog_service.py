@@ -2,6 +2,7 @@ import math
 
 from config import settings
 from db.client import DatabaseClient
+from models.entities import CatalogItem
 from models.schemas import (
     CatalogBrandResponse,
     CatalogItemResponse,
@@ -36,22 +37,24 @@ class CatalogService:
         offset = (page - 1) * page_size
         items = self.db.get_catalog_items(brand_id, type_id, offset, page_size)
         return CatalogListResponse(
-            items=[
-                CatalogItemResponse(
-                    id=item.id,
-                    name=item.name,
-                    description=item.description,
-                    price=item.price,
-                    picture_uri=item.picture_uri,
-                    catalog_brand_id=item.catalog_brand_id,
-                    catalog_type_id=item.catalog_type_id,
-                    brand_name=item.brand_name,
-                    type_name=item.type_name,
-                )
-                for item in items
-            ],
+            items=[to_product_response(item) for item in items],
             page=page,
             page_size=page_size,
             total_count=total_count,
             total_pages=total_pages,
         )
+
+
+def to_product_response(item: CatalogItem) -> CatalogItemResponse:
+    """A Product in the shape the catalog returns it."""
+    return CatalogItemResponse(
+        id=item.id,
+        name=item.name,
+        description=item.description,
+        price=item.price,
+        picture_uri=item.picture_uri,
+        catalog_brand_id=item.catalog_brand_id,
+        catalog_type_id=item.catalog_type_id,
+        brand_name=item.brand_name,
+        type_name=item.type_name,
+    )

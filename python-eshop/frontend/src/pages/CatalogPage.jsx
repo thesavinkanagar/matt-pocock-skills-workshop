@@ -4,6 +4,7 @@ import { api } from '../api/client';
 import CatalogFilters from '../components/CatalogFilters';
 import Pagination from '../components/Pagination';
 import ProductCard from '../components/ProductCard';
+import { useAuth } from '../context/AuthContext';
 
 export default function CatalogPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -12,6 +13,9 @@ export default function CatalogPage() {
   const [catalog, setCatalog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const { isAuthenticated } = useAuth();
+  const [favouriteIds, setFavouriteIds] = useState(new Set());
 
   const brandId = searchParams.get('brand') || '';
   const typeId = searchParams.get('type') || '';
@@ -25,6 +29,26 @@ export default function CatalogPage() {
       })
       .catch((err) => setError(err.message));
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setFavouriteIds(new Set());
+      return;
+    }
+    api
+      .getFavourites()
+      .then((favourites) => setFavouriteIds(new Set(favourites.map((product) => product.id))))
+      .catch((err) => setError(err.message));
+  }, [isAuthenticated]);
+
+  async function handleFavourite(productId) {
+    try {
+      await api.addFavourite(productId);
+      setFavouriteIds((current) => new Set(current).add(productId));
+    } catch (err) {
+      setError(err.message);
+    }
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -81,7 +105,12 @@ export default function CatalogPage() {
         <>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {catalog?.items.map((item) => (
-              <ProductCard key={item.id} item={item} />
+              <ProductCard
+                key={item.id}
+                item={item}
+                isFavourite={favouriteIds.has(item.id)}
+                onFavourite={isAuthenticated ? handleFavourite : undefined}
+              />
             ))}
           </div>
 
