@@ -74,3 +74,49 @@ def test_shoppers_favourites_are_isolated(client, demo_headers):
 
     assert favourite_ids(client, demo_headers) == [1]
     assert favourite_ids(client, other) == [4]
+
+
+def remove(client, headers, product_id):
+    response = client.delete(f"/api/favourites/{product_id}", headers=headers)
+    assert response.status_code == 200, response.text
+    return response
+
+
+def test_removed_favourite_is_no_longer_listed(client, demo_headers):
+    for product_id in [2, 7, 5]:
+        save(client, demo_headers, product_id)
+
+    remove(client, demo_headers, 7)
+
+    assert favourite_ids(client, demo_headers) == [5, 2]
+
+
+def test_removing_a_product_that_is_not_a_favourite_succeeds(client, demo_headers):
+    save(client, demo_headers, 2)
+
+    remove(client, demo_headers, 9)
+    remove(client, demo_headers, 99999)
+
+    assert favourite_ids(client, demo_headers) == [2]
+
+
+def test_anonymous_shoppers_cannot_remove_favourites(client, demo_headers, anon_headers):
+    save(client, demo_headers, 1)
+
+    for headers in [{}, anon_headers]:
+        response = client.delete("/api/favourites/1", headers=headers)
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Authentication required"
+
+    assert favourite_ids(client, demo_headers) == [1]
+
+
+def test_removing_never_touches_another_shoppers_favourites(client, demo_headers):
+    other = register(client, "other@example.com")
+    save(client, demo_headers, 3)
+    save(client, other, 3)
+
+    remove(client, other, 3)
+
+    assert favourite_ids(client, demo_headers) == [3]
+    assert favourite_ids(client, other) == []

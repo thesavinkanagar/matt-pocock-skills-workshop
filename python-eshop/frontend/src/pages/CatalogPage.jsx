@@ -42,9 +42,19 @@ export default function CatalogPage() {
   }, [isAuthenticated]);
 
   async function handleFavourite(productId) {
+    const saved = favouriteIds.has(productId);
     try {
-      await api.addFavourite(productId);
-      setFavouriteIds((current) => new Set(current).add(productId));
+      if (saved) {
+        await api.removeFavourite(productId);
+      } else {
+        await api.addFavourite(productId);
+      }
+      setFavouriteIds((current) => {
+        const next = new Set(current);
+        if (saved) next.delete(productId);
+        else next.add(productId);
+        return next;
+      });
     } catch (err) {
       setError(err.message);
     }

@@ -6,10 +6,14 @@
 
 **Status:** ready-for-agent
 
-- [ ] `DELETE /api/favourites/{product_id}` removes the Favourite; it no longer appears in `GET /api/favourites`
-- [ ] Removing a Product that isn't a Favourite also succeeds
-- [ ] `DELETE` returns 401 with no credentials and with only an `X-Basket-Id` header
-- [ ] One shopper removing a Product never affects another shopper's Favourites
-- [ ] Clicking a filled heart in the catalog removes the Favourite and empties the heart
-- [ ] Each card on the Favourites page has a remove button that removes it from the page
-- [ ] Backend tests through the HTTP API with the `client` fixture cover the above; frontend checked by hand in the browser
+- [x] `DELETE /api/favourites/{product_id}` removes the Favourite; it no longer appears in `GET /api/favourites`
+- [x] Removing a Product that isn't a Favourite also succeeds
+- [x] `DELETE` returns 401 with no credentials and with only an `X-Basket-Id` header
+- [x] One shopper removing a Product never affects another shopper's Favourites
+- [x] Clicking a filled heart in the catalog removes the Favourite and empties the heart
+- [x] Each card on the Favourites page has a remove button that removes it from the page
+- [x] Backend tests through the HTTP API with the `client` fixture cover the above; frontend checked by hand in the browser
+
+## Comments
+
+- Implemented: `DELETE /api/favourites/{product_id}` (idempotent, sign-in only), filled catalog heart now removes, and each Favourites page card has a Remove button. Backend tests in `python-eshop/backend/tests/test_favourites.py`; frontend checked by hand in the browser.

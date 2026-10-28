@@ -323,6 +323,13 @@ class DatabaseClient:
                 (email, catalog_item_id, added_at),
             )
 
+    def remove_favourite(self, email: str, catalog_item_id: int) -> None:
+        with self._connection() as conn:
+            conn.execute(
+                "DELETE FROM favourites WHERE email = ? AND catalog_item_id = ?",
+                (email, catalog_item_id),
+            )
+
     def list_favourite_products(self, email: str) -> list[CatalogItem]:
         """The shopper's favourite Products, newest first. Missing Products are skipped."""
         with self._connection() as conn:

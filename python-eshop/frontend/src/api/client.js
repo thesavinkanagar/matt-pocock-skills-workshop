@@ -132,4 +132,6 @@ export const api = {
 
   getFavourites: () => request('/api/favourites'),
   addFavourite: (productId) => request(`/api/favourites/${productId}`, { method: 'PUT' }),
+  removeFavourite: (productId) =>
+    request(`/api/favourites/${productId}`, { method: 'DELETE' }),
 };

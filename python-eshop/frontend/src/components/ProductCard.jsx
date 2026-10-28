@@ -7,10 +7,9 @@ function HeartButton({ filled, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      disabled={filled}
       aria-label={filled ? 'Remove from Favourites' : 'Add to Favourites'}
       aria-pressed={filled}
-      className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-sm transition hover:bg-white disabled:cursor-default"
+      className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-sm transition hover:bg-white"
     >
       <svg
         viewBox="0 0 24 24"
@@ -24,7 +23,7 @@ function HeartButton({ filled, onClick }) {
   );
 }
 
-export default function ProductCard({ item, onAdded, isFavourite, onFavourite }) {
+export default function ProductCard({ item, onAdded, isFavourite, onFavourite, onRemove }) {
   const { refreshBasket } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -66,14 +65,26 @@ export default function ProductCard({ item, onAdded, isFavourite, onFavourite })
         </div>
         <div className="flex items-center justify-between gap-3">
           <p className="text-xl font-bold text-slate-900">${item.price.toFixed(2)}</p>
-          <button
-            type="button"
-            onClick={handleAdd}
-            disabled={loading}
-            className="btn-primary"
-          >
-            {loading ? 'Adding...' : 'Add to basket'}
-          </button>
+          <div className="flex items-center gap-2">
+            {onRemove && (
+              <button
+                type="button"
+                onClick={() => onRemove(item.id)}
+                aria-label={`Remove ${item.name} from Favourites`}
+                className="btn-secondary"
+              >
+                Remove
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleAdd}
+              disabled={loading}
+              className="btn-primary"
+            >
+              {loading ? 'Adding...' : 'Add to basket'}
+            </button>
+          </div>
         </div>
         {message && <p className="text-xs font-medium text-emerald-600">{message}</p>}
       </div>

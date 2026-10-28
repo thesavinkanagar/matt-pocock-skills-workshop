@@ -26,3 +26,13 @@ def add_favourite(
     except ProductNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc))
     return {"product_id": product_id, "favourite": True}
+
+
+@router.delete("/{product_id}", status_code=status.HTTP_200_OK)
+def remove_favourite(
+    product_id: int,
+    email: str = Depends(require_authenticated_user),
+    service: FavouritesService = Depends(get_favourites_service),
+):
+    service.remove(email, product_id)
+    return {"product_id": product_id, "favourite": False}

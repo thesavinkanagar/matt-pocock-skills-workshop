@@ -24,6 +24,15 @@ export default function FavouritesPage() {
       .finally(() => setLoading(false));
   }, [isAuthenticated, navigate]);
 
+  async function handleRemove(productId) {
+    try {
+      await api.removeFavourite(productId);
+      setFavourites((current) => current.filter((item) => item.id !== productId));
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   if (loading) {
     return <p className="text-center text-slate-500">Loading favourites...</p>;
   }
@@ -39,7 +48,7 @@ export default function FavouritesPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {favourites.map((item) => (
-          <ProductCard key={item.id} item={item} />
+          <ProductCard key={item.id} item={item} onRemove={handleRemove} />
         ))}
       </div>
     </div>
