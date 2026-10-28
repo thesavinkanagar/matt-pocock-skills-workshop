@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "mash/**"]
+  pull_request:
+
+jobs:
+  backend:
+    name: Backend tests (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        # Windows is here on purpose: the test setup once broke only on Windows.
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: python-eshop/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run --locked pytest
+
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python-eshop/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: python-eshop/frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  spelling:
+    name: Australian spelling
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use "favourite", not "favorite" (see GLOSSARY.md)
+        run: |
+          if grep -rniI "favorite" python-eshop \
+              --exclude-dir=.venv --exclude-dir=node_modules --exclude-dir=dist; then
+            echo "::error::Found US spelling 'favorite'. Use 'favourite' (GLOSSARY.md)."
+            exit 1
+          fi
